@@ -20,6 +20,7 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'role',
         'email',
         'password',
     ];
@@ -47,6 +48,16 @@ class User extends Authenticatable
         ];
     }
 
+    public function roles()
+    {
+        $data = [
+            'admin',
+            'user'
+        ];
+
+        return $data;
+    }
+
     /**
      * Get the user's initials
      */
@@ -56,5 +67,12 @@ class User extends Authenticatable
             ->explode(' ')
             ->map(fn (string $name) => Str::of($name)->substr(0, 1))
             ->implode('');
+    }
+
+    public function scopeSearch($query, $search)
+    {
+        return $query->where('name', 'like', '%' . $search . '%')
+            ->orWhere('email', 'like', '%' . $search . '%')
+            ->orWhere('role', 'like', '%' . $search . '%');
     }
 }
