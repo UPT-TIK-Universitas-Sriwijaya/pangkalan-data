@@ -14,6 +14,16 @@ class Index extends Component
     public $perPage = 10;
     public $search = '';
 
+    public function mount()
+    {
+        if (session()->has('saved')) {
+            LivewireAlert::title(session('saved.title'))
+                ->text(session('saved.text'))
+                ->success()
+                ->show();
+        }
+    }
+
     public function confirmUserDeletion($id)
     {
         LivewireAlert::title('Delete User')
@@ -46,6 +56,11 @@ class Index extends Component
         }
 
         $user->delete();
+
+        LivewireAlert::title("User Deleted")
+                ->text('User has been deleted')
+                ->success()
+                ->show();
     }
 
     public function render()

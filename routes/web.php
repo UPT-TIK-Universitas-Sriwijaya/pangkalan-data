@@ -7,7 +7,7 @@ use App\Livewire\Configuration;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('login');
 })->name('home');
 
 Route::view('dashboard', 'dashboard')
@@ -24,6 +24,7 @@ Route::middleware(['auth'])->group(function () {
     Route::group(['middleware' => ['role:admin']], function() {
         Route::get('configuration', Configuration::class)->name('configuration');
         Route::get('users', \App\Livewire\Users\Index::class)->name('users');
+        Route::get('users/create', \App\Livewire\Users\Create::class)->name('users.create');
     });
 
 
