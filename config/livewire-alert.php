@@ -18,4 +18,6 @@ return [
     'showCancelButton' => false,
     'showConfirmButton' => false,
     'backdrop' => true,
+    'timerProgressBar' => true,
+    'allowOutsideClick' => false,
 ];

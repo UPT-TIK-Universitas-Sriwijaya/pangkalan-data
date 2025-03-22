@@ -13,6 +13,8 @@ class Index extends Component
 
     public $perPage = 10;
     public $search = '';
+    public $sortDirection = 'ASC';
+    public $sortColumn = 'name';
 
     public function mount()
     {
@@ -22,6 +24,17 @@ class Index extends Component
                 ->success()
                 ->show();
         }
+    }
+
+    public function doSort($column)
+    {
+        if($this->sortColumn === $column) {
+            $this->sortDirection = $this->sortDirection === 'ASC' ? 'DESC' : 'ASC';
+            return;
+        }
+
+        $this->sortColumn = $column;
+        $this->sortDirection = 'ASC';
     }
 
     public function confirmUserDeletion($id)
@@ -63,6 +76,16 @@ class Index extends Component
                 ->show();
     }
 
+    public function updatedPerPage()
+    {
+        $this->resetPage();
+    }
+
+    public function updatedSearch()
+    {
+        $this->resetPage();
+    }
+
     public function render()
     {
         $page = [
@@ -72,7 +95,9 @@ class Index extends Component
             100,
         ];
         return view('livewire.users.index', [
-            'users' => User::search($this->search)->paginate($this->perPage),
+            'users' => User::search($this->search)
+                            ->orderBy($this->sortColumn, $this->sortDirection)
+                            ->paginate($this->perPage),
             'page' => $page,
         ]);
     }

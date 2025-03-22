@@ -28,9 +28,15 @@
                 <table class="w-full text-sm text-neutral-900 border border-neutral-300 rounded-lg overflow-hidden shadow-lg dark:border-neutral-700 dark:text-neutral-200 dark:bg-neutral-800">
                     <thead class="text-gray-700 upper-case">
                         <tr>
-                            <th class="px-4 py-3">Name</th>
-                            <th class="px-4 py-3">E-Mail</th>
-                            <th class="px-4 py-3">Role</th>
+                            <th wire:click="doSort('name')" class="px-4 py-3">
+                                <x-datatable-sort :sortColumn='$sortColumn' :sortDirection="$sortDirection" columnName="name"/>
+                            </th>
+                            <th wire:click="doSort('email')" class="px-4 py-3">
+                                <x-datatable-sort :sortColumn='$sortColumn' :sortDirection="$sortDirection" columnName="email"/>
+                            </th>
+                            <th wire:click="doSort('role')" class="px-4 py-3">
+                                <x-datatable-sort :sortColumn='$sortColumn' :sortDirection="$sortDirection" columnName="role"/>
+                            </th>
                             <th class="px-4 py-3">Action</th>
                         </tr>
                     </thead>
@@ -40,8 +46,8 @@
                                 <td class="px-4 py-3">{{ $user->name }}</td>
                                 <td class="px-4 py-3">{{ $user->email }}</td>
                                 <td class="px-4 py-3">{{ $user->role }}</td>
-                                <td class="px-4 py-3">
-                                    <div class="flex items center gap-2">
+                                <td class="px-4 py-3 items-center">
+                                    <div class="flex items-center gap-2">
                                         <flux:button variant="danger" size="sm" wire:click="confirmUserDeletion({{$user->id}})"><i class="fas fa-trash"></i></flux:button>
                                         {{-- <a href="{{ route('users.destroy', $user) }}" class="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300">
                                             <i class="fas fa-trash"></i>
@@ -57,7 +63,7 @@
                 <div class="flex">
                     <div class="flex space-x-4 items-center mb-3">
                         <label for="">Per Page</label>
-                        <select wire:model="perPage" class="border border-neutral-300 rounded-lg">
+                        <select wire:model.live="perPage" class="border border-neutral-300 rounded-lg">
                             @foreach ($page as $p)
                                 <option value="{{ $p }}">{{ $p }}</option>
                             @endforeach
