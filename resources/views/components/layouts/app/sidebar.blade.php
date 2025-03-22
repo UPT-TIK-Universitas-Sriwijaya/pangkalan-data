@@ -16,7 +16,7 @@
                     <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
                     @if (auth()->user()->role === 'admin')
                     <flux:navlist.item icon="cog" :href="route('configuration')" :current="request()->routeIs('configuration')" wire:navigate>{{ __('Configuration') }}</flux:navlist.item>
-                    <flux:navlist.item icon="users" :href="route('users')" :current="request()->routeIs('users')" wire:navigate>{{ __('Users') }}</flux:navlist.item>
+                    <flux:navlist.item icon="users" :href="route('users')" :current="request()->routeIs('users') || request()->routeIs('users.*')" wire:navigate>{{ __('Users') }}</flux:navlist.item>
                     @endif
 
                 </flux:navlist.group>

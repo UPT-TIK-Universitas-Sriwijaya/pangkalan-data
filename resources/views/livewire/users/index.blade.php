@@ -5,7 +5,7 @@
             <h1 class="text-2xl font-semibold text-neutral-900 dark:text-neutral-200"><i class="fas fa-users me-4"></i>{{ __('Users') }}</h1>
             {{-- create button --}}
             <div class="flex flex-col lg:flex-row gap-4">
-                <flux:button icon-trailing="plus" variant="primary" href="{{route('users.create')}}">{{ __('Create User') }}</flux:button>
+                <flux:button icon-trailing="plus" variant="primary" href="{{route('users.create')}}" wire:navigate>{{ __('Create User') }}</flux:button>
             </div>
             <div class="flex flex-col lg:flex-row gap-4">
                 <div class="relative">

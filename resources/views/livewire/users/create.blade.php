@@ -51,7 +51,7 @@
                 </button>
 
                 {{-- cancel button with grey color--}}
-                <a href="{{route('users')}}" class="px-4 py-2 mx-3 text-sm font-medium bg-neutral-300 border border-transparent rounded-lg
+                <a href="{{route('users')}}" wire:navigate class="px-4 py-2 mx-3 text-sm font-medium bg-neutral-300 border border-transparent rounded-lg
                     hover:bg-neutral-400 focus:outline-none focus:border-neutral-400 focus:ring focus:ring-neutral-200 dark:text-neutral-200
                     dark:bg-neutral-700 dark:hover:bg-neutral-800 dark:focus:border-neutral-400 dark:focus:ring-neutral-200">
                     {{ __('Cancel') }}

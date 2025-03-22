@@ -51,7 +51,7 @@ class Create extends Component
             'text' => 'Berhasil menyimpan data!',
         ]);
 
-        $this->redirect('/users');
+        $this->redirect('/users', navigate: true);
 
         // Redirect to the users index page
     }
