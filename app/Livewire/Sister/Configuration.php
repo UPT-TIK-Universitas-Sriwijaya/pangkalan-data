@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Livewire;
+namespace App\Livewire\Sister;
 
-use App\Models\Configuration as ModelsConfiguration;
+use App\Models\Sister\SisterConfig;
 use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
-use Livewire\Component;
 use Livewire\Attributes\Validate;
+use Livewire\Component;
 
 class Configuration extends Component
 {
@@ -18,24 +18,21 @@ class Configuration extends Component
     #[Validate('required|string')]
     public $username = '';
 
+    #[Validate('required|string')]
+    public $id_pengguna = '';
+
     public function mount()
     {
-        if (session()->has('saved')) {
-            LivewireAlert::title(session('saved.title'))
-                ->text(session('saved.text'))
-                ->success()
-                ->show();
-        }
-
-        $data = ModelsConfiguration::first();
+        $data = SisterConfig::first();
 
         if ($data) {
             $this->url = $data->url;
             $this->password = $data->password;
             $this->username = $data->username;
+            $this->id_pengguna = $data->id_pengguna;
         }
-
     }
+
 
     public function storePrompt()
     {
@@ -52,12 +49,13 @@ class Configuration extends Component
     {
         $this->validate();
 
-        ModelsConfiguration::updateOrCreate([
+        SisterConfig::updateOrCreate([
             'id' => 1
         ], [
             'url' => $this->url,
             'password' => $this->password,
             'username' => $this->username,
+            'id_pengguna' => $this->id_pengguna,
         ]);
 
         LivewireAlert::title('Success!')
@@ -70,6 +68,6 @@ class Configuration extends Component
 
     public function render()
     {
-        return view('livewire.configuration');
+        return view('livewire.sister.configuration');
     }
 }

@@ -22,9 +22,16 @@ Route::middleware(['auth'])->group(function () {
     Route::get('settings/appearance', Appearance::class)->name('settings.appearance');
 
     Route::group(['middleware' => ['role:admin']], function() {
+
         Route::get('configuration', Configuration::class)->name('configuration');
         Route::get('users', \App\Livewire\Users\Index::class)->name('users');
         Route::get('users/create', \App\Livewire\Users\Create::class)->name('users.create');
+
+        Route::prefix('sister')->group(function () {
+            Route::get('configuration', \App\Livewire\Sister\Configuration::class)->name('sister.configuration');
+        });
+
+
     });
 
 

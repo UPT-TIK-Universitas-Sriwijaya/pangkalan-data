@@ -4,10 +4,10 @@
             <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
                 <h1 class="text-2xl font-semibold text-neutral-900 dark:text-neutral-200"><i class="fas fa-users me-4"></i>{{ __('Users') }}</h1>
                 {{-- create button --}}
-                <div class="flex flex-col lg:flex-row gap-4">
+                <div class="flex flex-col lg:mt-0 lg:flex-row gap-4 mt-5 ">
                     <flux:button icon-trailing="plus" variant="primary" href="{{route('users.create')}}" wire:navigate>{{ __('Create User') }}</flux:button>
                 </div>
-                <div class="flex flex-col lg:flex-row gap-4">
+                <div class="flex flex-col lg:mt-0 lg:flex-row mt-5 gap-4">
                     <div class="relative">
                         <input
                             wire:model.live.debounce.300ms="search"
@@ -26,7 +26,7 @@
             <div class="mt-5">
                 <div class="overflow-x-auto">
                     <table class="w-full text-sm text-neutral-900 border border-neutral-300 rounded-lg overflow-hidden shadow-lg dark:border-neutral-700 dark:text-neutral-200 dark:bg-neutral-800">
-                        <thead class="text-gray-700 upper-case">
+                        <thead class="text-gray-700 ">
                             <tr>
                                 <th wire:click="doSort('name')" class="px-4 py-3">
                                     <x-datatable-sort :sortColumn='$sortColumn' :sortDirection="$sortDirection" columnName="name"/>

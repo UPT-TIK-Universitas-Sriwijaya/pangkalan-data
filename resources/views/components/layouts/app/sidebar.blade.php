@@ -14,12 +14,19 @@
             <flux:navlist variant="outline">
                 <flux:navlist.group :heading="__('Platform')" class="grid">
                     <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
-                    @if (auth()->user()->role === 'admin')
-                    <flux:navlist.item icon="cog" :href="route('configuration')" :current="request()->routeIs('configuration')" wire:navigate>{{ __('Configuration') }}</flux:navlist.item>
-                    <flux:navlist.item icon="users" :href="route('users')" :current="request()->routeIs('users') || request()->routeIs('users.*')" wire:navigate>{{ __('Users') }}</flux:navlist.item>
-                    @endif
-
                 </flux:navlist.group>
+                @if (auth()->user()->role === 'admin')
+                <flux:navlist.group :heading="__('Master Data')" class="grid mt-5">
+                    <flux:navlist.item icon="users" :href="route('users')" :current="request()->routeIs('users') || request()->routeIs('users.*')" wire:navigate>{{ __('Users') }}</flux:navlist.item>
+                </flux:navlist.group>
+                <flux:navlist.group :heading="__('Feeder Data')" class="grid mt-5">
+                    <flux:navlist.item icon="cog" :href="route('configuration')" :current="request()->routeIs('configuration')" wire:navigate>{{ __('Configuration') }}</flux:navlist.item>
+                </flux:navlist.group>
+                <flux:navlist.group :heading="__('Sister Data')" class="grid mt-5">
+                    <flux:navlist.item icon="cog" :href="route('sister.configuration')" :current="request()->routeIs('sister.configuration')" wire:navigate>{{ __('Configuration') }}</flux:navlist.item>
+                </flux:navlist.group>
+                @endif
+
             </flux:navlist>
 
             <flux:spacer />
