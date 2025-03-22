@@ -65,6 +65,8 @@ class Index extends Component
                 ->text('You need at least 1 admin in the system')
                 ->error()
                 ->show();
+
+            $this->addError('delete', 'You need at least 1 admin in the system');
             return;
         }
 
@@ -73,6 +75,9 @@ class Index extends Component
         LivewireAlert::title("User Deleted")
                 ->text('User has been deleted')
                 ->success()
+                ->withOptions([
+                    'allowOutsideClick' => true,
+                ])
                 ->show();
     }
 
