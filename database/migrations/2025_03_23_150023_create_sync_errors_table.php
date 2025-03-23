@@ -11,11 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('jenis_keluars', function (Blueprint $table) {
+        Schema::create('sync_errors', function (Blueprint $table) {
             $table->id();
-            $table->string('id_jenis_keluar')->unique();
-            $table->string('jenis_keluar');
-            $table->boolean('apa_mahasiswa');
+            $table->string('model');
+            $table->text('message');
             $table->timestamps();
         });
     }
@@ -25,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('jenis_keluars');
+        Schema::dropIfExists('sync_errors');
     }
 };

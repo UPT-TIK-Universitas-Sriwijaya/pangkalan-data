@@ -20,6 +20,7 @@
                     <flux:navlist.item icon="users" :href="route('users')" :current="request()->routeIs('users') || request()->routeIs('users.*')" wire:navigate>{{ __('Users') }}</flux:navlist.item>
                 </flux:navlist.group>
                 <flux:navlist.group :heading="__('Feeder Data')" class="grid mt-5">
+                    <flux:navlist.item icon="cloud-arrow-down" :href="route('feeder.sinkronisasi')" :current="request()->routeIs('feeder.sinkronisasi') || request()->routeIs('feeder.sinkronisasi.*')" wire:navigate>{{ __('Sinkronisasi') }}</flux:navlist.item>
                     <flux:navlist.item icon="cog" :href="route('configuration')" :current="request()->routeIs('configuration')" wire:navigate>{{ __('Configuration') }}</flux:navlist.item>
                 </flux:navlist.group>
                 <flux:navlist.group :heading="__('Sister Data')" class="grid mt-5">

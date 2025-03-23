@@ -31,6 +31,9 @@ Route::middleware(['auth'])->group(function () {
             Route::get('configuration', \App\Livewire\Sister\Configuration::class)->name('sister.configuration');
         });
 
+        Route::prefix('feeder')->group(function () {
+            Route::get('sinkronisasi', \App\Livewire\Feeder\Sinkronisasi\Index::class)->name('feeder.sinkronisasi');
+        });
 
     });
 
