@@ -4,14 +4,12 @@ namespace App\Livewire\Feeder\Sinkronisasi;
 
 use App\Models\SinkronisasiFeeder;
 use App\Services\Feeder\FeederAPI;
-use Flux\Flux;
 use Illuminate\Bus\BatchRepository;
 use Illuminate\Support\Facades\Bus;
-use Illuminate\Support\Facades\DB;
 use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
-use Livewire\Attributes\On;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
+use App\Rules\LivewireFunctionExists;
 
 class Index extends Component
 {
@@ -33,7 +31,11 @@ class Index extends Component
     #[Validate('required|string')]
     public $batch_name_create = '';
 
-    #[Validate('required|string')]
+    #[Validate([
+        'required',
+        'string',
+        new LivewireFunctionExists(self::class) // Validasi fungsi harus ada di component ini
+    ])]
     public $function_name_create = '';
 
     public function mount()
