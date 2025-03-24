@@ -2,12 +2,15 @@
 
 namespace App\Livewire\Feeder\Sinkronisasi;
 
+use App\Models\SinkronisasiFeeder;
 use App\Services\Feeder\FeederAPI;
+use Flux\Flux;
 use Illuminate\Bus\BatchRepository;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\DB;
 use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
 use Livewire\Attributes\On;
+use Livewire\Attributes\Validate;
 use Livewire\Component;
 
 class Index extends Component
@@ -19,30 +22,91 @@ class Index extends Component
     public $progress = 0;
     public $completed = false;
 
+    public $sinkronisasiItems = [];
+
+    public $showConfirmModal = false;
+    public $hasActiveBatch = false;
+
+    #[Validate('required|string')]
+    public $name_create = '';
+
+    #[Validate('required|string')]
+    public $batch_name_create = '';
+
+    #[Validate('required|string')]
+    public $function_name_create = '';
+
     public function mount()
     {
-        // Cari batch yang belum selesai langsung dari database
-        $unfinishedBatch = DB::table('job_batches')
-            ->whereNull('finished_at') // Batch yang belum selesai
-            ->orderBy('created_at', 'desc') // Ambil batch terbaru
-            ->first();
-
-        if ($unfinishedBatch) {
-            $this->batchId = $unfinishedBatch->id;
-            $this->getBatchProgress();
-        }
+        $this->loadData();
     }
 
-    public function getBatchProgress()
+    public function loadData()
     {
-        if (!$this->batchId) return;
+        $this->sinkronisasiItems = SinkronisasiFeeder::all()->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'nama' => $item->name,
+                'function' => $item->function_name,
+                'batch_id' => $item->batch_id,
+                'terakhir_sinkronisasi' => $item->terakhir_sinkronisasi,
+                'progress' => $this->getBatchProgress($item->batch_id),
+            ];
+        })->toArray();
 
-        $batch = app(BatchRepository::class)->find($this->batchId);
+        $this->checkActiveBatch();
+    }
 
+    public function getBatchProgress($batchId)
+    {
+        if (!$batchId) return null;
+
+        $batch = app(BatchRepository::class)->find($batchId);
         if ($batch) {
-            $this->progress = $batch->progress();
-            $this->completed = $batch->finished();
+            if ($batch->finished()) {
+                return null;
+            }
+            return $batch->progress();
         }
+        return null;
+    }
+
+    public function updateProgress()
+    {
+        $updatedItems = [];
+        $hasRunningBatch = false;
+        foreach ($this->sinkronisasiItems as $item) {
+            if ($item['batch_id']) {
+                $progress = $this->getBatchProgress($item['batch_id']);
+
+                // Jika batch sudah selesai, hapus batch_id dari database
+                if ($progress === 100 || $progress === null) {
+                    SinkronisasiFeeder::where('id', $item['id'])->update(['batch_id' => null, 'terakhir_sinkronisasi' => now()]);
+                    $progress = null;
+                } else {
+                    $hasRunningBatch = true; // Set flag jika masih ada batch aktif
+                }
+
+                $updatedItems[] = [
+                    'id' => $item['id'],
+                    'nama' => $item['nama'],
+                    'function' => $item['function'],
+                    'terakhir_sinkronisasi' => $item['terakhir_sinkronisasi'],
+                    'batch_id' => $progress !== null ? $item['batch_id'] : null,
+                    'progress' => $progress,
+                ];
+            } else {
+                $updatedItems[] = $item;
+                // if batch is finished, remove batch
+            }
+        }
+        $this->sinkronisasiItems = $updatedItems;
+        $this->hasActiveBatch = $hasRunningBatch;
+    }
+
+    public function checkActiveBatch()
+    {
+        $this->hasActiveBatch = SinkronisasiFeeder::whereNotNull('batch_id')->exists();
     }
 
     public function prompt($function)
@@ -168,6 +232,10 @@ class Index extends Component
                     ->success()
                     ->show();
 
+        SinkronisasiFeeder::where('function_name', 'sync_referensi')->update(['terakhir_sinkronisasi' => now()]);
+
+        $this->loadData();
+
     }
 
     public function sync_mahasiswa()
@@ -201,7 +269,9 @@ class Index extends Component
             // ['act' => 'GetListMahasiswaLulusDO', 'count' => 'GetCountMahasiswaLulusDO', 'order' => 'id_registrasi_mahasiswa', 'job' => \App\Jobs\Feeder\SyncJob::class]
         ];
 
-        $batch = Bus::batch([])->name('sync_mahasiswa')->dispatch();
+        $sync = SinkronisasiFeeder::where('function_name', 'sync_mahasiswa')->first();
+
+        $batch = Bus::batch([])->name($sync->batch_name)->dispatch();
 
         foreach ($data as $d) {
 
@@ -228,14 +298,74 @@ class Index extends Component
 
         }
 
+        SinkronisasiFeeder::where('function_name', 'sync_mahasiswa')->update(['batch_id' => $batch->id]);
+
         LivewireAlert::title('Batch Job')
                     ->text('Batch berhasil Dibuat!')
                     ->success()
                     ->show();
+
+        $this->loadData();
+    }
+
+    public function create()
+    {
+        LivewireAlert::title('Create Sinkronisasi')
+                ->text('Apakah anda yakin ?')
+                ->asConfirm()
+                ->onConfirm('store')
+                ->show();
+    }
+
+    public function store()
+    {
+        $this->validate();
+
+        $data = [
+            'name' => $this->name_create,
+            'batch_name' => $this->batch_name_create,
+            'function_name' => $this->function_name_create,
+        ];
+
+        SinkronisasiFeeder::create($data);
+
+        $this->reset('name_create', 'batch_name_create', 'function_name_create');
+
+        LivewireAlert::title('Sinkronisasi')
+                    ->text('Sinkronisasi berhasil disimpan')
+                    ->success()
+                    ->show();
+
+        $this->loadData();
+    }
+
+    public function delete($id)
+    {
+        LivewireAlert::title('Delete Sinkronisasi')
+        ->text('Apakah anda yakin ?')
+        ->asConfirm()
+        ->onConfirm('deleteSync', ['id' => $id])
+        ->show();
+    }
+
+    public function deleteSync($data)
+    {
+        $sinkron = SinkronisasiFeeder::find($data['id']);
+        if (!$sinkron) return;
+
+        $sinkron->delete();
+
+        LivewireAlert::title('Sinkronisasi')
+                    ->text('Sinkronisasi berhasil dihapus')
+                    ->success()
+                    ->show();
+
+        $this->loadData();
     }
 
     public function render()
     {
-        return view('livewire.feeder.sinkronisasi.index');
+        $data = SinkronisasiFeeder::all();
+        return view('livewire.feeder.sinkronisasi.index', compact('data'));
     }
 }
