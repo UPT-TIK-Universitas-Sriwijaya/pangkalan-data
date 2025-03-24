@@ -28,7 +28,7 @@
                 <table class="w-full text-left table-auto min-w-max">
                     <thead>
                         <tr>
-                            <th class="p-4 border-b border-slate-600 bg-slate-700">
+                            <th class="p-4 border-b border-slate-600 bg-slate-700 text-center">
                                 <p class="text-sm font-normal leading-none text-slate-300">
                                     Name
                                 </p>
@@ -38,7 +38,7 @@
                                     ACT
                                 </p>
                             </th>
-                            <th class="p-4 border-b border-slate-600 bg-slate-700">
+                            <th class="p-4 border-b border-slate-600 bg-slate-700 text-center">
                                 <p class="text-sm font-normal leading-none text-slate-300">
                                     Status Sync
                                 </p>
@@ -50,7 +50,7 @@
                         @foreach ($sinkronisasiItems as $item)
                             <tr>
                                 <td class="border px-4 py-2">{{ $item['nama'] }}</td>
-                                <td class="border px-4 py-2 text-nowrap">
+                                <td class="border px-4 py-4 text-nowrap">
                                     <div class="h-full flex items-center justify-center gap-6">
                                         {{-- @include('livewire.feeder.sinkronisasi.delete') --}}
                                         <flux:button variant="danger" size="sm" icon="trash" wire:click="delete({{$item['id']}})"></flux:button>
@@ -60,7 +60,7 @@
                                         </flux:button>
                                     </div>
                                 </td>
-                                <td class="border px-4 py-2">
+                                <td class="border px-4 py-2 text-center">
                                     @if ($item['batch_id'])
                                         <div class="w-full bg-gray-200 rounded-full h-4 dark:bg-gray-700">
                                             <div class="bg-blue-600 h-4 rounded-full transition-all duration-500"
@@ -78,38 +78,6 @@
                             </tr>
                         @endforeach
                     </tbody>
-                    {{-- <tbody>
-                        <tr class="hover:bg-slate-100 dark:hover:bg-slate-700">
-                            <td
-                                class="p-4 border-b border-slate-700 text-sm text-neutral-950 dark:text-slate-100 font-semibold">
-                                Referensi
-                            </td>
-                            <td class="p-4 border-b border-slate-700 text-sm text-neutral-950 dark:text-slate-300">
-                                <flux:button variant="primary" size="sm" wire:click="sync_referensi"
-                                    wire:confirm="Apakah Kamu Yakin?"><i class="fas fa-sync me-3"></i> Sync data
-                                </flux:button>
-                            </td>
-                            <td class="p-4 border-b border-slate-700 text-sm text-neutral-950 dark:text-slate-300">
-                                <flux:button variant="primary" size="sm" wire:click="sync_referensi"
-                                    wire:confirm="Apakah Kamu Yakin?"><i class="fas fa-sync me-3"></i> Sync data
-                                </flux:button>
-                            </td>
-                        </tr>
-                        <tr class="hover:bg-slate-100 dark:hover:bg-slate-700">
-                            <td
-                                class="p-4 border-b border-slate-700 text-sm text-neutral-950 dark:text-slate-100 font-semibold">
-                                Data Mahasiswa
-                            </td>
-                            <td class="p-4 border-b border-slate-700 text-sm text-neutral-950 dark:text-slate-300">
-                                <flux:button variant="primary" size="sm" wire:click="sync_mahasiswa"
-                                    wire:confirm="Apakah Kamu Yakin?"><i class="fas fa-sync me-3"></i> Sync data
-                                </flux:button>
-                            </td>
-                            <td class="p-4 border-b border-slate-700 text-sm text-neutral-950 dark:text-slate-300">
-                                {{$batchId}}
-                            </td>
-                        </tr>
-                    </tbody> --}}
                 </table>
             </div>
         </div>
