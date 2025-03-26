@@ -169,6 +169,7 @@ class Index extends Component
             ['act' => 'GetTingkatPrestasi' , 'primary' => 'id_tingkat_prestasi', 'model' => \App\Models\Feeder\Referensi\TingkatPrestasi::class],
             ['act' => 'GetProfilPT' , 'primary' => 'id_perguruan_tinggi', 'model' => \App\Models\Feeder\Referensi\ProfilPt::class],
             ['act' => 'GetProdi' , 'primary' => 'id_prodi', 'model' => \App\Models\Feeder\Referensi\ProgramStudi::class],
+            ['act' => 'GetJenjangPendidikan' , 'primary' => 'id_jenjang_didik', 'model' => \App\Models\Feeder\Referensi\JenjangPendidikan::class],
             // ['act' => 'GetAllPT', 'primary' => 'id_perguruan_tinggi', 'model' => \App\Models\Referensi\AllPt::class],
         ];
 
@@ -238,6 +239,63 @@ class Index extends Component
 
         $this->loadData();
 
+    }
+
+    public function sync_dosen()
+    {
+        ini_set('max_execution_time', 0);
+        ini_set('memory_limit', '1G');
+
+        $data = [
+            [
+                'act' => 'DetailBiodataDosen',
+                'limit' => '1000',
+                'offset' => '',
+                'order' => 'id_dosen',
+                'count' => 'GetCountRiwayatPendidikanMahasiswa',
+                'job' => \App\Jobs\Feeder\SyncJob::class,
+                'model' => \App\Models\Feeder\Dosen\BiodataDosen::class,
+                'primary' => 'id_dosen',
+            ],
+            [
+                'act' => 'GetListPenugasanDosen',
+                'limit' => '1000',
+                'offset' => '',
+                'order' => 'id_registrasi_dosen',
+                'count' => 'GetCountPenugasanSemuaDosen',
+                'job' => \App\Jobs\Feeder\SyncJob::class,
+                'model' => \App\Models\Feeder\Dosen\PenugasanDosen::class,
+                'primary' => ['id_tahun_ajaran', 'id_registrasi_dosen'],
+            ],
+        ];
+
+        $sync = SinkronisasiFeeder::where('function_name', 'sync_dosen')->first();
+
+        $batch = Bus::batch([])->name($sync->batch_name)->dispatch();
+
+        foreach ($data as $d) {
+
+            $count = $this->count_value($d['count']);
+
+            $limit = 1000;
+            $act = $d['act'];
+            $order = $d['order'];
+
+            for ($i=0; $i < $count; $i+=$limit) {
+                $job = new $d['job']($act, $limit, $i, $order, null, $d['model'], $d['primary']);
+                $batch->add($job);
+            }
+
+        }
+
+        SinkronisasiFeeder::where('function_name', 'sync_dosen')->update(['batch_id' => $batch->id]);
+
+        LivewireAlert::title('Batch Job')
+                    ->text('Batch berhasil Dibuat!')
+                    ->success()
+                    ->show();
+
+        $this->loadData();
     }
 
     public function sync_mahasiswa()
@@ -367,7 +425,6 @@ class Index extends Component
 
     public function render()
     {
-        $data = SinkronisasiFeeder::all();
-        return view('livewire.feeder.sinkronisasi.index', compact('data'));
+        return view('livewire.feeder.sinkronisasi.index');
     }
 }
